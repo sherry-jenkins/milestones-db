@@ -5,8 +5,8 @@ from pymongo import MongoClient
 from datetime import datetime
 from dateutil.parser import parse
 
-# client = MongoClient('mongodb://readWriteUser:askQiaonan@10.91.53.62/LINCS')
-client = MongoClient('mongodb://mmcdermott:kroyweN@127.0.0.1/LINCS')
+client = MongoClient('mongodb://readWriteUser:askQiaonan@10.91.53.62/LINCS')
+# client = MongoClient('mongodb://readWriteAny:onlyQiaonanKnows@127.0.0.1')
 db = client['LINCS']
 md = db["milestones"]
 md.drop()
@@ -126,9 +126,9 @@ for inp in mcArr:
         pertCountDictInit = {}
         if getPair[1]:
             pertCountMeta = getPair[1].split(";")
-            # print(pertCountMeta)
+            print(pertCountMeta)
             for countMeta in pertCountMeta:
-                # print(countMeta)
+                print(countMeta)
                 countData = countMeta.split(",")
                 pertCountDict = pertCountDictInit.copy()
                 if countData[0]:
@@ -233,7 +233,7 @@ for inp in mcArr:
         # Data release dates
         dateArr = []
         if inp[13]:
-            lvlOneDate = parse(inp[13] + ' -0700')
+            lvlOneDate = parse(inp[13] + ' -0400')
             lvlOne = {
                 'date': lvlOneDate,
                 'releaseLevel': 1
@@ -241,7 +241,7 @@ for inp in mcArr:
             dateArr.append(lvlOne)
 
         if inp[14]:
-            lvlTwoDate = parse(inp[14] + ' -0700')
+            lvlTwoDate = parse(inp[14] + ' -0400')
             lvlTwo = {
                 'date': lvlTwoDate,
                 'releaseLevel': 2
@@ -249,7 +249,7 @@ for inp in mcArr:
             dateArr.append(lvlTwo)
 
         if inp[15]:
-            lvlThreeDate = parse(inp[15] + ' -0700')
+            lvlThreeDate = parse(inp[15] + ' -0400')
             lvlThree = {
                 'date': lvlThreeDate,
                 'releaseLevel': 3
@@ -257,7 +257,7 @@ for inp in mcArr:
             dateArr.append(lvlThree)
 
         if inp[16]:
-            lvlFourDate = parse(inp[16] + ' -0700')
+            lvlFourDate = parse(inp[16] + ' -0400')
             lvlFour = {
                 'date': lvlFourDate,
                 'releaseLevel': 4
@@ -267,8 +267,8 @@ for inp in mcArr:
         if dateArr:
             dictTot['release-dates'] = dateArr
 
-        print(dateArr)
-
+        if inp[17]:
+            dictTot['release-link'] = inp[17]
         md.insert(dictTot)
-        # print(dictTot)
+        print(dictTot)
 # print(dictTot)
