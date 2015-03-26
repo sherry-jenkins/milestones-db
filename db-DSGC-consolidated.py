@@ -5,8 +5,8 @@ from pymongo import MongoClient
 from datetime import datetime
 from dateutil.parser import parse
 
-client = MongoClient('mongodb://readWriteUser:askQiaonan@10.91.53.62/LINCS')
-# client = MongoClient('mongodb://readWriteAny:onlyQiaonanKnows@127.0.0.1')
+# client = MongoClient('mongodb://readWriteUser:askQiaonan@10.91.53.62/LINCS')
+client = MongoClient('mongodb://mmcdermott:kroyweN@127.0.0.1/LINCS')
 db = client['LINCS']
 md = db["milestones"]
 md.drop()
@@ -14,7 +14,8 @@ md.drop()
 dInit = {}
 mongoArr = []
 
-with open('milestones-consolidated.txt', 'rU') as data:
+# with open('milestones-consolidated.txt', 'rU') as data:
+with open('milestones-consolidated-phaseOne.txt', 'rU') as data:
     reader = csv.reader(data, skipinitialspace=False, delimiter="\t")
     mcArr = []
     for row in reader:
@@ -124,6 +125,7 @@ for inp in mcArr:
 
         pertCountArr = []
         pertCountDictInit = {}
+
         if getPair[1]:
             pertCountMeta = getPair[1].split(";")
             print(pertCountMeta)
@@ -269,6 +271,11 @@ for inp in mcArr:
 
         if inp[17]:
             dictTot['release-link'] = inp[17]
+
+        print(inp[18])
+        if inp[18]:
+            dictTot['phase'] = inp[18]
+            
         md.insert(dictTot)
         print(dictTot)
 # print(dictTot)
