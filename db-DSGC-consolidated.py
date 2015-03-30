@@ -5,8 +5,7 @@ from pymongo import MongoClient
 from datetime import datetime
 from dateutil.parser import parse
 
-# client = MongoClient('mongodb://readWriteUser:askQiaonan@10.91.53.62/LINCS')
-client = MongoClient('mongodb://mmcdermott:kroyweN@127.0.0.1/LINCS')
+# client = ENTER YOUR MONGODB CLIENT HERE
 db = client['LINCS']
 md = db["milestones"]
 md.drop()
