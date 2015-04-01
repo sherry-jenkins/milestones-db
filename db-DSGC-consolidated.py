@@ -5,7 +5,7 @@ from pymongo import MongoClient
 from datetime import datetime
 from dateutil.parser import parse
 
-# client = ENTER YOUR MONGODB CLIENT HERE
+client = MongoClient('mongodb://mmcdermott:kroyweN@localhost/LINCS')
 db = client['LINCS']
 md = db["milestones"]
 md.drop()
@@ -13,8 +13,8 @@ md.drop()
 dInit = {}
 mongoArr = []
 
-# with open('milestones-consolidated.txt', 'rU') as data:
-with open('milestones-consolidated-phaseOne.txt', 'rU') as data:
+with open('milestones-consolidated.txt', 'rU') as data:
+# with open('milestones-consolidated-phaseOne.txt', 'rU') as data:
     reader = csv.reader(data, skipinitialspace=False, delimiter="\t")
     mcArr = []
     for row in reader:
