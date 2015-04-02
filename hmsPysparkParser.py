@@ -10,7 +10,7 @@ confSpark = SparkConf().setAppName('hmsParser')
 conf = confSpark.setMaster('mesos://catherine:5050')
 sc = SparkContext(conf=conf)
 
-client = MongoClient("mongodb://mmcdermott:kroyweN@localhost/LINCS")
+client = MongoClient("mongodb://mmcdermott:kroyweN@146.203.54.119/LINCS")
 db = client["LINCS"]
 md = db["milestones"]
 md.drop()
