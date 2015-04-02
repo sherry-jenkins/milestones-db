@@ -4,12 +4,7 @@ if __name__ == "__main__":
         from urllib2 import urlopen
         import io
         import json
-        from dateutil.parser import parse
-        from pyspark import SparkContext, SparkConf
-
-        confSpark = SparkConf().setAppName('hmsParser')
-        conf = confSpark.setMaster('mesos://catherine:5050')
-        sc = SparkContext(conf=conf) 
+        from dateutil.parser import parse 
 
         # Dictionaries for caching lines, sms, and ps
         lineCache = {}
@@ -192,6 +187,12 @@ if __name__ == "__main__":
 
         outList = [outD]
         return outList
+
+    from pyspark import SparkContext, SparkConf
+
+    confSpark = SparkConf().setAppName('hmsParser')
+    conf = confSpark.setMaster('mesos://catherine:5050')
+    sc = SparkContext(conf=conf)
 
     phaseOneIds = ["20001","20002","20003","20004","20006","20007","20008",
         "20009","20010","20011","20012","20013","20014","20015","20016","20017",
