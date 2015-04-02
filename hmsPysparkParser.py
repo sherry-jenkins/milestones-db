@@ -225,4 +225,5 @@ def produceResults(ID):
 # RUN IT IN SPARK!
 idTuple = tuple(phaseOneIds)
 distIds = sc.parallelize(phaseOneIds)
-distIds.map(lambda id: produceResults(id))
+output = distIds.map(lambda id: produceResults(id)).reduce(lambda x,y : x+y)
+print output
