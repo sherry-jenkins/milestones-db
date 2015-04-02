@@ -39,8 +39,10 @@ lineCache = {}
 smCache = {}
 psCache = {}
 
+print phaseOneIds
+
 def produceResults(ID):
-    print(ID)
+    print ID
     emptyDict = {}
 
     outD = emptyDict.copy()
@@ -202,7 +204,10 @@ def produceResults(ID):
         outD["proteins"] = pArr
 
     md.insert(outD)
+    sparkList = [ID]
+    return sparkList
 
 idTuple = tuple(phaseOneIds)
 distIds = sc.parallelize(phaseOneIds)
-distIds.map(lambda id: produceResults(id))
+output = distIds.map(lambda id: produceResults(id)).reduce(lambda x,y : x+y)
+print output
