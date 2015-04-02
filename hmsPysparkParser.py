@@ -219,7 +219,7 @@ with open('outputJSON.txt', 'w+') as outJson:
 
     # RUN IT IN SPARK!
     idTuple = tuple(phaseOneIds)
-    distIds = sc.parallelize(phaseOneIds)
+    distIds = sc.parallelize(phaseOneIds, 10)
     output = distIds.map(lambda id: produceResults(id)).reduce(lambda x,y : x+y)
     outJSon.write(output)
     print output
