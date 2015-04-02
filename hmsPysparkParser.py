@@ -2,18 +2,12 @@ import csv
 from urllib2 import urlopen
 import io
 import json
-from pymongo import MongoClient
 from dateutil.parser import parse
 from pyspark import SparkContext, SparkConf
 
 confSpark = SparkConf().setAppName('hmsParser')
 conf = confSpark.setMaster('mesos://catherine:5050')
 sc = SparkContext(conf=conf)
-
-client = MongoClient("mongodb://mmcdermott:kroyweN@146.203.54.119/LINCS")
-db = client["LINCS"]
-md = db["milestones"]
-md.drop()
 
 phaseOneIds = ["20001","20002","20003","20004","20006","20007","20008",
 "20009","20010","20011","20012","20013","20014","20015","20016","20017",
@@ -221,9 +215,12 @@ def produceResults(ID):
 
     md.insert(outD)
 
+with open('outputJSON.txt', 'w+') as outJson:
 
-# RUN IT IN SPARK!
-idTuple = tuple(phaseOneIds)
-distIds = sc.parallelize(phaseOneIds)
-output = distIds.map(lambda id: produceResults(id)).reduce(lambda x,y : x+y)
-print output
+    # RUN IT IN SPARK!
+    idTuple = tuple(phaseOneIds)
+    distIds = sc.parallelize(phaseOneIds)
+    output = distIds.map(lambda id: produceResults(id)).reduce(lambda x,y : x+y)
+    outJSon.write(output)
+    print output
+
