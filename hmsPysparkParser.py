@@ -47,7 +47,7 @@ def produceResults(ID):
 
     # Load JSON of Dataset using Harvard"s API
     datasetUrl = "http://lincs.hms.harvard.edu/db/api/v1/dataset/" + \
-            ID + "/?format=json"
+            str(ID) + "/?format=json"
     reply = urlopen(datasetUrl).read().decode("utf8")
     dataset = json.loads(reply)
 
