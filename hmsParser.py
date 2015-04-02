@@ -34,6 +34,11 @@ phaseOneIds = ["20001","20002","20003","20004","20006","20007","20008",
 "20198","20199","20200","20201","20202","20203","20204","20206","20207",
 "20209","20210","20211"]
 
+# Dictionaries for caching lines, sms, and ps
+lineCache = {}
+smCache = {}
+psCache = {}
+
 for ID in phaseOneIds:
     print(ID)
     emptyDict = {}
@@ -106,8 +111,12 @@ for ID in phaseOneIds:
             smDict = emptyDict.copy()
             smUrl = "http://lincs.hms.harvard.edu/db/api/v1/smallmolecule/" \
                     + smId + "/?format=json"
-            smReply = urlopen(smUrl).read().decode("utf8")
-            respDict = json.loads(smReply)
+            if smId not in smCache:
+                smReply = urlopen(smUrl).read().decode("utf8")
+                respDict = json.loads(smReply)
+                smCache[smId] = respDict
+            else:
+                respDict = smCache[smId]
             smDict["hmsId"] = smId
             smDict["lincsId"] = respDict["smLincsID"]
             smDict["name"] = respDict["smName"]
@@ -140,8 +149,12 @@ for ID in phaseOneIds:
             cLineDict = emptyDict.copy()
             lineUrl = "http://lincs.hms.harvard.edu/db/api/v1/cell/" + \
                     cLineId + "/?format=json"
-            lineReply = urlopen(lineUrl).read().decode("utf8")
-            respDict = json.loads(lineReply)
+            if cLineId not in cLineCache:
+                lineReply = urlopen(lineUrl).read().decode("utf8")
+                respDict = json.loads(lineReply)
+                lineCache[cLineId] = respDict
+            else:
+                respDict = lineCache[cLineId]
             cLineDict["hmsId"] = cLineId
             cLineDict["name"] = respDict["clName"]
             if respDict["clCellType"]:
@@ -173,8 +186,12 @@ for ID in phaseOneIds:
             pDict = emptyDict.copy()
             pUrl = "http://lincs.hms.harvard.edu/db/api/v1/protein/" + \
                     pId + "/?format=json"
-            pReply = urlopen(pUrl).read().decode("utf8")
-            respDict = json.loads(pReply)
+            if pId not in pCache:
+                pReply = urlopen(pUrl).read().decode("utf8")
+                respDict = json.loads(pReply)
+                pCache[pId] = respDict
+            else:
+                respDict = pCache[pId]
             pDict["hmsId"] = pId
             pDict["name"] = respDict["ppName"]
             if respDict["ppProteinType"]:
@@ -192,7 +209,7 @@ for ID in phaseOneIds:
         pMetaArr = []
         pMeta = {
                 "count": pLength,
-                "type": "proteins" # Is this right? are any iPSC differentiated?
+                "type": "proteins" # Right? Are any iPSC differentiated?
                 }
         pMetaArr.append(pMeta)
         outD["proteins-meta"] = pMetaArr
