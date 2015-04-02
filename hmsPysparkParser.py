@@ -165,7 +165,7 @@ def produceResults(ID):
                 if respDict["ppSourceOrganism"]:
                     pDict["organism"] = respDict["ppSourceOrganism"]
                 pArr.append(pDict)
-            
+
     smLength = len(smIds)
     lineLength = len(lineIds)
     pLength = len(pIds)
@@ -186,7 +186,7 @@ def produceResults(ID):
 
     if pertMeta:
         outD["perturbagens-meta"] = pertMeta
-    
+
     if cLineArr:
         outD["cell-lines"] = cLineArr
 
@@ -197,10 +197,10 @@ def produceResults(ID):
                 "type": "cell lines" # Is this right?
                 }                    # Are any iPSC differentiated?
         cLineMetaArr.append(cLineMeta)
-    
+
     if cLineMetaArr:
         outD["cell-lines-meta"] = cLineMetaArr
-    
+
     if not pLength == 0:
         pMetaArr = []
         pMeta = {
@@ -219,7 +219,7 @@ with open('outputJSON.txt', 'w+') as outJson:
 
     # RUN IT IN SPARK!
     idTuple = tuple(phaseOneIds)
-    distIds = sc.parallelize(phaseOneIds, 10)
+    distIds = sc.parallelize(phaseOneIds, 18)
     output = distIds.map(lambda id: produceResults(id)).reduce(lambda x,y : x+y)
     outJSon.write(output)
     print output
