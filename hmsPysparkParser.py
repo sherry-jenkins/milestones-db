@@ -213,14 +213,15 @@ def produceResults(ID):
     if pArr:
         outD["proteins"] = pArr
 
-    md.insert(outD)
+    sparkList = [ID]
+    return sparkList
 
 with open('outputJSON.txt', 'w+') as outJson:
 
     # RUN IT IN SPARK!
     idTuple = tuple(phaseOneIds)
     distIds = sc.parallelize(phaseOneIds, 18)
-    output = distIds.map(produceResults).reduce(lambda x,y : x+y)
+    output = distIds.map(lambda x: produceResults(x)).reduce(lambda x,y : x+y)
     outJSon.write(output)
     print output
 
