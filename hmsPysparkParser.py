@@ -4,7 +4,7 @@ if __name__ == "__main__":
         from urllib2 import urlopen
         import io
         import json
-        from dateutil.parser import parse 
+        from dateutil.parser import parse
 
         # Dictionaries for caching lines, sms, and ps
         lineCache = {}
