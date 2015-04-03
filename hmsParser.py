@@ -37,7 +37,7 @@ phaseOneIds = ["20001","20002","20003","20004","20006","20007","20008",
 # Dictionaries for caching lines, sms, and ps
 lineCache = {}
 smCache = {}
-psCache = {}
+pCache = {}
 
 for ID in phaseOneIds:
     print(ID)
