@@ -86,87 +86,106 @@ for ID in phaseOneIds:
     lineIds = []
     pIds = []
 
+    smArr = []
+    cLineArr = []
+    pArr = []
+
     for row in cr:
         if row[0] == "datarecordID":
             continue
         if row[2] and row[3]:
-            strSMId = str(row[2]) + "-" + str(row[3])
-            if strSMId not in smIds:
-                smIds.append(strSMId)
+            # Build small molecule ID and check if in cache. If not,
+            # get meta-data from Harvard API
+            smId = str(row[2]) + "-" + str(row[3])
+            if smId not in smIds:
+                smIds.append(smId)
+                smDict = emptyDict.copy()
+                smUrl = "http://lincs.hms.harvard.edu/db/api/v1/" + \
+                        "smallmolecule/" + smId + "/?format=json"
+                if smId not in smCache:
+                    smReply = urlopen(smUrl).read().decode("utf8")
+                    respDict = json.loads(smReply)
+                    smCache[smId] = respDict
+                else:
+                    respDict = smCache[smId]
+                smDict["hmsId"] = smId
+                smDict["lincsId"] = respDict["smLincsID"]
+                smDict["name"] = respDict["smName"]
+                smDict["type"] = "small molecule"
+                smArr.append(smDict)
+
         if row[9]:
-            strLineId = str(row[9])
-            if strLineId not in lineIds:
-                lineIds.append(strLineId)
+            # Get cell line ID and check if in cache. If not,
+            # get meta-data from Harvard API
+            cLineId = str(row[9])
+            if cLineId not in lineIds:
+                lineIds.append(cLineId)
+                cLineDict = emptyDict.copy()
+                lineUrl = "http://lincs.hms.harvard.edu/db/api/v1/" + \
+                        "cell/" + cLineId + "/?format=json"
+                if cLineId not in lineCache:
+                    lineReply = urlopen(lineUrl).read().decode("utf8")
+                    respDict = json.loads(lineReply)
+                    lineCache[cLineId] = respDict
+                else:
+                    respDict = lineCache[cLineId]
+                cLineDict["hmsId"] = cLineId
+                cLineDict["name"] = respDict["clName"]
+                if respDict["clCellType"]:
+                    cLineDict["type"] = respDict["clCellType"] # Cancer lines?
+                if respDict["clOrgan"]:
+                    cLineDict["tissue"] = respDict["clOrgan"]
+                if respDict["clOrganism"]:
+                    cLineDict["organism"] = respDict["clOrganism"]
+                cLineArr.append(cLineDict)
+
         if row[11]:
-            strPId = str(row[11])
-            if strPId not in pIds:
-                pIds.append(strPId)
+            # Get protein ID and check if in cache. If not,
+            # get meta-data from Harvard API
+            pId = str(row[11])
+            if pId not in pIds:
+                pIds.append(pId)
+                pDict = emptyDict.copy()
+                pUrl = "http://lincs.hms.harvard.edu/db/api/v1/protein/" + \
+                        pId + "/?format=json"
+                if pId not in pCache:
+                    pReply = urlopen(pUrl).read().decode("utf8")
+                    respDict = json.loads(pReply)
+                    pCache[pId] = respDict
+                else:
+                    respDict = pCache[pId]
+                pDict["hmsId"] = pId
+                pDict["name"] = respDict["ppName"]
+                if respDict["ppProteinType"]:
+                    pDict["type"] = respDict["ppProteinType"]
+                if respDict["ppProteinSource"]:
+                    pDict["source"] = respDict["ppProteinSource"]
+                if respDict["ppProteinForm"]:
+                    pDict["form"] = respDict["ppProteinForm"]
+                if respDict["ppSourceOrganism"]:
+                    pDict["organism"] = respDict["ppSourceOrganism"]
+                pArr.append(pDict)
+
 
     # Enter small molecules and count as perturbagens
-    smArr = []
     smLength = len(smIds)
-
-    if not smLength == 0:
-        for smId in smIds:
-            smDict = emptyDict.copy()
-            smUrl = "http://lincs.hms.harvard.edu/db/api/v1/smallmolecule/" \
-                    + smId + "/?format=json"
-            if smId not in smCache:
-                smReply = urlopen(smUrl).read().decode("utf8")
-                respDict = json.loads(smReply)
-                smCache[smId] = respDict
-            else:
-                respDict = smCache[smId]
-            smDict["hmsId"] = smId
-            smDict["lincsId"] = respDict["smLincsID"]
-            smDict["name"] = respDict["smName"]
-            smDict["type"] = "small molecule"
-            smArr.append(smDict)
-
+    if not smLength == 0:            
         outD["perturbagens"] = smArr
-
         pertMeta = emptyDict.copy()
         pertCountArr = []
-
         countType = {
                 "count": smLength,
                 "type": "small molecules"
                 }
         pertCountArr.append(countType)
         pertMeta["count-type"] = pertCountArr
-
         if pertMeta:
             outD["perturbagens-meta"] = pertMeta
 
     # Enter cell lines and count
-    # Also get addition cell line meta-data from Harvard API
-
-    cLineArr = []
     lineLength = len(lineIds)
-
     if not lineLength == 0:
-        for cLineId in lineIds:
-            cLineDict = emptyDict.copy()
-            lineUrl = "http://lincs.hms.harvard.edu/db/api/v1/cell/" + \
-                    cLineId + "/?format=json"
-            if cLineId not in cLineCache:
-                lineReply = urlopen(lineUrl).read().decode("utf8")
-                respDict = json.loads(lineReply)
-                lineCache[cLineId] = respDict
-            else:
-                respDict = lineCache[cLineId]
-            cLineDict["hmsId"] = cLineId
-            cLineDict["name"] = respDict["clName"]
-            if respDict["clCellType"]:
-                cLineDict["type"] = respDict["clCellType"] #Cancer cell lines?
-            if respDict["clOrgan"]:
-                cLineDict["tissue"] = respDict["clOrgan"]
-            if respDict["clOrganism"]:
-                cLineDict["organism"] = respDict["clOrganism"]
-            cLineArr.append(cLineDict)
-
         outD["cell-lines"] = cLineArr
-
         cLineMetaArr = []
         cLineMeta = {
                 "count": lineLength,
@@ -176,36 +195,9 @@ for ID in phaseOneIds:
         outD["cell-lines-meta"] = cLineMetaArr
 
     # Enter proteins and count
-    # Also get addition protein meta-data from Harvard API
-
-    pArr = []
     pLength = len(pIds)
-
-    if not pLength == 0:
-        for pId in pIds:
-            pDict = emptyDict.copy()
-            pUrl = "http://lincs.hms.harvard.edu/db/api/v1/protein/" + \
-                    pId + "/?format=json"
-            if pId not in pCache:
-                pReply = urlopen(pUrl).read().decode("utf8")
-                respDict = json.loads(pReply)
-                pCache[pId] = respDict
-            else:
-                respDict = pCache[pId]
-            pDict["hmsId"] = pId
-            pDict["name"] = respDict["ppName"]
-            if respDict["ppProteinType"]:
-                pDict["type"] = respDict["ppProteinType"]
-            if respDict["ppProteinSource"]:
-                pDict["source"] = respDict["ppProteinSource"]
-            if respDict["ppProteinForm"]:
-                pDict["form"] = respDict["ppProteinForm"]
-            if respDict["ppSourceOrganism"]:
-                pDict["organism"] = respDict["ppSourceOrganism"]
-            pArr.append(pDict)
-
+    if not pLength == 0: 
         outD["proteins"] = pArr
-
         pMetaArr = []
         pMeta = {
                 "count": pLength,
