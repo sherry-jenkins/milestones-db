@@ -5,11 +5,14 @@ import json
 from pymongo import MongoClient
 from dateutil.parser import parse
 
-client = MongoClient("mongodb://mmcdermott:kroyweN@localhost/LINCS")
+# Connect to MongoDB collection milestones
+# Make sure that the LINCS db is created locally
+client = MongoClient("mongodb://username:password@localhost/LINCS")
 db = client["LINCS"]
 md = db["milestones"]
 md.drop()
 
+# All Ids of LINCS Phase One data from LIFE
 phaseOneIds = ["20001","20002","20003","20004","20006","20007","20008",
 "20009","20010","20011","20012","20013","20014","20015","20016","20017",
 "20020","20021","20022","20023","20024","20025","20026","20027","20028",
@@ -166,10 +169,9 @@ for ID in phaseOneIds:
                     pDict["organism"] = respDict["ppSourceOrganism"]
                 pArr.append(pDict)
 
-
     # Enter small molecules and count as perturbagens
     smLength = len(smIds)
-    if not smLength == 0:            
+    if not smLength == 0:
         outD["perturbagens"] = smArr
         pertMeta = emptyDict.copy()
         pertCountArr = []
@@ -196,7 +198,7 @@ for ID in phaseOneIds:
 
     # Enter proteins and count
     pLength = len(pIds)
-    if not pLength == 0: 
+    if not pLength == 0:
         outD["proteins"] = pArr
         pMetaArr = []
         pMeta = {
