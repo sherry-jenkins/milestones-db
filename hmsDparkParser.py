@@ -8,7 +8,7 @@ def produceResults(ID):
     # Dictionaries for caching lines, sms, and ps
     lineCache = {}
     smCache = {}
-    psCache = {}
+    pCache = {}
 
     print(ID)
     emptyDict = {}
@@ -67,19 +67,19 @@ def produceResults(ID):
         # Get small molecule ID, check if in cache.
         # If not in cache, download, get meta-data, and cache it.
         if row[2] and row[3]:
-            strSMId = str(row[2]) + "-" + str(row[3])
-            if strSMId not in smIds:
-                smIds.append(strSMId)
+            smId = str(row[2]) + "-" + str(row[3])
+            if smId not in smIds:
+                smIds.append(smId)
                 smDict = emptyDict.copy()
                 smUrl = "http://lincs.hms.harvard.edu/db/api/v1/" + \
-                        "smallmolecule/" + strSMId + "/?format=json"
-                if strSMId not in smCache:
+                        "smallmolecule/" + smId + "/?format=json"
+                if smId not in smCache:
                     smReply = urlopen(smUrl).read().decode("utf8")
                     respDict = json.loads(smReply)
-                    smCache[strSMId] = respDict
+                    smCache[smId] = respDict
                 else:
-                    respDict = smCache[strSMId]
-                smDict["hmsId"] = strSMId
+                    respDict = smCache[smId]
+                smDict["hmsId"] = smId
                 smDict["lincsId"] = respDict["smLincsID"]
                 smDict["name"] = respDict["smName"]
                 smDict["type"] = "small molecule"
@@ -88,19 +88,19 @@ def produceResults(ID):
         # Get cell line ID, check if in cache.
         # If not in cache, download, get meta-data, and cache it.
         if row[9]:
-            strLineId = str(row[9])
-            if strLineId not in lineIds:
-                lineIds.append(strLineId)
+            lineId = str(row[9])
+            if lineId not in lineIds:
+                lineIds.append(lineId)
                 cLineDict = emptyDict.copy()
                 lineUrl = "http://lincs.hms.harvard.edu/db/api/v1/cell/" + \
-                        strLineId + "/?format=json"
-                if strLineId not in lineCache:
+                        lineId + "/?format=json"
+                if lineId not in lineCache:
                     lineReply = urlopen(lineUrl).read().decode("utf8")
                     respDict = json.loads(lineReply)
-                    lineCache[strLineId] = respDict
+                    lineCache[lineId] = respDict
                 else:
-                    respDict = lineCache[strLineId]
-                cLineDict["hmsId"] = strLineId
+                    respDict = lineCache[lineId]
+                cLineDict["hmsId"] = lineId
                 cLineDict["name"] = respDict["clName"]
                 if respDict["clCellType"]:
                     cLineDict["type"] = respDict["clCellType"] #Cancer cell lines?
@@ -113,19 +113,19 @@ def produceResults(ID):
         # Get protein ID, check if in cache.
         # If not in cache, download, get meta-data, and cache it.
         if row[11]:
-            strPId = str(row[11])
-            if strPId not in pIds:
-                pIds.append(strPId)
+            pId = str(row[11])
+            if pId not in pIds:
+                pIds.append(pId)
                 pDict = emptyDict.copy()
                 pUrl = "http://lincs.hms.harvard.edu/db/api/v1/protein/" + \
-                        strPId + "/?format=json"
-                if strPId not in pCache:
+                        pId + "/?format=json"
+                if pId not in pCache:
                     pReply = urlopen(pUrl).read().decode("utf8")
                     respDict = json.loads(pReply)
-                    pCache[strPId] = respDict
+                    pCache[pId] = respDict
                 else:
-                    respDict = pCache[strPId]
-                pDict["hmsId"] = strPId
+                    respDict = pCache[pId]
+                pDict["hmsId"] = pId
                 pDict["name"] = respDict["ppName"]
                 if respDict["ppProteinType"]:
                     pDict["type"] = respDict["ppProteinType"]
