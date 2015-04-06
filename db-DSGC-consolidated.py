@@ -236,7 +236,7 @@ for inp in mcArr:
         # Data release dates
         dateArr = []
         if inp[13]:
-            lvlOneDate = parse(inp[13] + ' -0400')
+            lvlOneDate = parse(inp[13] + ' -0600')
             lvlOne = {
                 'date': lvlOneDate,
                 'releaseLevel': 1
@@ -244,7 +244,7 @@ for inp in mcArr:
             dateArr.append(lvlOne)
 
         if inp[14]:
-            lvlTwoDate = parse(inp[14] + ' -0400')
+            lvlTwoDate = parse(inp[14] + ' -0600')
             lvlTwo = {
                 'date': lvlTwoDate,
                 'releaseLevel': 2
@@ -252,7 +252,7 @@ for inp in mcArr:
             dateArr.append(lvlTwo)
 
         if inp[15]:
-            lvlThreeDate = parse(inp[15] + ' -0400')
+            lvlThreeDate = parse(inp[15] + ' -0600')
             lvlThree = {
                 'date': lvlThreeDate,
                 'releaseLevel': 3
@@ -260,7 +260,7 @@ for inp in mcArr:
             dateArr.append(lvlThree)
 
         if inp[16]:
-            lvlFourDate = parse(inp[16] + ' -0400')
+            lvlFourDate = parse(inp[16] + ' -0600')
             lvlFour = {
                 'date': lvlFourDate,
                 'releaseLevel': 4
@@ -276,6 +276,6 @@ for inp in mcArr:
         print(inp[18])
         if inp[18]:
             dictTot['phase'] = inp[18]
-            
+
         md.insert(dictTot)
         print(dictTot)

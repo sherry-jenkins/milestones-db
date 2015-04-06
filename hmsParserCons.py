@@ -6,10 +6,10 @@ from pymongo import MongoClient
 from dateutil.parser import parse
 from datetime import datetime
 
-# In order for this to work, you need to RUN hmsParser.py FIRST
+# In order for this to work, you need to run hmsParser.py FIRST
 
 # Connect to both MongoDB collections -- milestones and milestonesCons
-client = MongoClient("mongodb://username:password@localhost/LINCS")
+client = MongoClient("mongodb://username:password@master/LINCS")
 db = client["LINCS"]
 md = db["milestones"]
 mdC = db["milestonesCons"]
@@ -18,65 +18,40 @@ mdC.drop()
 # Consolidated KINOMEscan assay
 kinomeDict = {}
 kinomeDict["assay"] = "KINOMEscan"
-kinomeDict["assay-info"] = "The KINOMEscan assay platform is based on a \
-        competition binding assay that is run for a compound of interest \
-        against each of a panel of 317 to 456 kinases. The assay has three \
-        components: a kinase-tagged phage, a test compound, and an \
-        immobilized ligand that the compound competes with to displace the \
-        kinase. The amount of kinase bound to the immobilized ligand is \
-        determined using quantitative PCR of the DNA tag.  Results for each \
-        kinase are reported as \"Percent of control\", where the control is \
-        DMSO and where a 100% result means no inhibition of kinase binding \
-        to the ligand in the presence of the compound, and where low percent \
-        results mean strong inhibition. The KINOMEscan data are presented \
-        graphically on TREEspot Kinase Dendrograms \
-        (http://www.discoverx.com/services/\
-        drug-discovery-development-services/treespot-data-analysis). \
-        For this study, HMS LINCS investigators have graphed results for \
-        kinases classified as 35 \"percent of control\" (in the presence of \
-        the compound, the kinase is 35% as active for binding ligand in the \
-        presence of DMSO), 5 \"percent of control\" and 1 \"percent of \
-        control\"."
+kinomeDict["assay-info"] = "The KINOMEscan assay platform is based on a competition binding assay that is run for a compound of interest against each of a panel of 317 to 456 kinases. The assay has three components: a kinase-tagged phage, a test compound, and an immobilized ligand that the compound competes with to displace the kinase. The amount of kinase bound to the immobilized ligand is determined using quantitative PCR of the DNA tag.  Results for each kinase are reported as \"Percent of control\", where the control is DMSO and where a 100% result means no inhibition of kinase binding to the ligand in the presence of the compound, and where low percent results mean strong inhibition. The KINOMEscan data are presented graphically on TREEspot Kinase Dendrograms (http://www.discoverx.com/services/drug-discovery-development-services/treespot-data-analysis). For this study, HMS LINCS investigators have graphed results for kinases classified as 35 \"percent of control\" (in the presence of the compound, the kinase is 35% as active for binding ligand in the presence of DMSO), 5 \"percent of control\" and 1 \"percent of control\"."
 kinomeDict["center"] = "HMS-LINCS"
 kinomeDict["phase"] = "LP1"
+kinomeDict["release-link"] = "http://lincs.hms.harvard.edu/data/kinomescan/"
 kinomeProteinNames = []
 kinomeProteins = []
 kinomePerts = []
 # Init meta dicts
-kinomePertMeta = { "count-type": { "count": 0, "type": "small molecules" } }
+kinomePertMeta = { "count-type": [{ "count": 0, "type": "small molecules" }] }
 kinomeProtMeta = { "count": 0, "type": "proteins" }
 # Init with an old date. Will be updated.
 kinomeReleaseDate = {
-"date": datetime(2002, 12, 25,0,0,0),
+"date": datetime(2002,12,25,0,0,0),
 "releaseLevel": 1 }
 
 # Consolidated KiNativ assay
 kinativDict = {}
 kinativDict["assay"] = "KiNativ"
-kinativDict["assay-info"] = "The KiNativ assay platform is based on the use \
-        of biotinylated acyl phosphates of ATP or ADP that act as probes by \
-        reacting with protein kinases on conserved lysine residues in the \
-        ATP binding pocket to covalently attach a biotin moiety.  Using \
-        these probes, cell lysates treated with a kinase inhibitor can be \
-        labeled with BHAcATP or BHAcADP, with kinases inhibited by the \
-        compound of interest exhibiting reduced or no labeling.  This is \
-        followed by digestion with trypsin, isolation of biotinylated \
-        peptides, and analysis by mass spectrometry to determine the extent \
-        of labeling of peptides from each kinase."
+kinativDict["assay-info"] = "The KiNativ assay platform is based on the use of biotinylated acyl phosphates of ATP or ADP that act as probes by reacting with protein kinases on conserved lysine residues in the ATP binding pocket to covalently attach a biotin moiety.  Using these probes, cell lysates treated with a kinase inhibitor can be labeled with BHAcATP or BHAcADP, with kinases inhibited by the compound of interest exhibiting reduced or no labeling.  This is followed by digestion with trypsin, isolation of biotinylated peptides, and analysis by mass spectrometry to determine the extent of labeling of peptides from each kinase."
 kinativDict["center"] = "HMS-LINCS"
 kinativDict["phase"] = "LP1"
+kinativDict["release-link"] = "http://lincs.hms.harvard.edu/db/datasets/?search=&extra_form_shown=true&dataset_type=KiNativ"
 kinativProteinNames = []
 kinativProteins = []
 kinativCellLineNames = []
 kinativCellLines = []
 kinativPerts = []
 # Init meta dicts
-kinativPertMeta = { "count-type": { "count": 0, "type": "small molecules" } }
+kinativPertMeta = {"count-type": [{ "count": 0, "type": "small molecules" }]}
 kinativProtMeta = { "count": 0, "type": "proteins" }
 kinativLineMeta = { "count": 0, "type": "cell lines" }
 # Init with an old date. Will be updated.
 kinativReleaseDate = {
-"date": datetime(2002, 12, 25,0,0,0),
+"date": datetime(2002,12,25,0,0,0),
 "releaseLevel": 1 }
 
 # Copy all documents from original milestones DB
@@ -96,8 +71,8 @@ for kinomeDoc in mdC.find({'assay':{'$regex':'KINOMEscan'}}):
     for pertDoc in kinomeDoc["perturbagens"]:
         kinomePerts.append(pertDoc)
     # Add perturbagens are unique in this case, so increment count
-    kinomePertMeta["count-type"]["count"] = \
-            kinomePertMeta["count-type"]["count"] + 1
+    kinomePertMeta["count-type"][0]["count"] = \
+            kinomePertMeta["count-type"][0]["count"] + 1
     for dateDoc in kinomeDoc["release-dates"]:
         # Check if date is later than current one. Replace if true
         if dateDoc["date"] > kinomeReleaseDate["date"]:
@@ -121,8 +96,8 @@ for kinativDoc in mdC.find({'assay':{'$regex':'KiNativ'}}):
     for pertDoc in kinativDoc["perturbagens"]:
         kinativPerts.append(pertDoc)
     # Add perturbagens are unique in this case, so increment count
-    kinativPertMeta["count-type"]["count"] = \
-            kinativPertMeta["count-type"]["count"] + 1
+    kinativPertMeta["count-type"][0]["count"] = \
+            kinativPertMeta["count-type"][0]["count"] + 1
     for dateDoc in kinativDoc["release-dates"]:
         # Check if date is later than current one. Replace if true
         if dateDoc["date"] > kinativReleaseDate["date"]:

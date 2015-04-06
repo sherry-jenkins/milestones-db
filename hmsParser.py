@@ -6,7 +6,7 @@ from pymongo import MongoClient
 from dateutil.parser import parse
 
 # Connect to MongoDB collection milestones
-# Make sure that the LINCS db is created locally
+# Make sure that mongoDB is running
 client = MongoClient("mongodb://username:password@localhost/LINCS")
 db = client["LINCS"]
 md = db["milestones"]
@@ -59,9 +59,11 @@ for ID in phaseOneIds:
     outD["assay"] = dataset["assayTitle"]
     outD["assay-info"] = dataset["assayDescription"]
     outD["phase"] = "LP1"
+    outD["hmsId"] = ID
+    outD["release-link"] = "http://lincs.hms.harvard.edu/db/datasets/"+ID+"/"
 
-    # Change from YYYY-MM-DD to MM/DD/YYYY TZ because I know this works parse and
-    # gives the proper time zone --> -400 is in the middle of the U.S
+    # Change from YYYY-MM-DD to MM/DD/YYYY TZ because I know this works.
+    # Parses and gives the proper time zone --> -400 = middle of the U.S
     dateArr = []
     date = dataset["mostRecentUpdate"]
     dateSplit = date.split("-")
